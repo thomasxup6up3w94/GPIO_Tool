@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LibGPIO File Conversion Tool</title>
+    <!-- <link rel="stylesheet" href="login.css/login.css"> -->
+    <!-- <link rel="shortcut icon" type="image/icon" href="image/msi_icon.ico"> -->
+    <link rel="icon" href="image/msi_icon.ico" type="image/x-icon" />
+    <link rel="icon" href="http://127.0.0.1:3000/msi_icon.ico" type="image/x-icon" />
+    <!-- <script src="GPIO.js/login.js"></script> -->
+    <!-- 引入SweetAlert的CSS文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.min.css">
+    <!-- 引入SweetAlert的JavaScript文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.min.js"></script>
+    <meta charset="utf-8">
+    <style>
+        * {
+            /* font-family: 微軟正黑體; */
+            font-family: 微軟正黑體 'PT Sans', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: white;
+        }
+
+        #username,
+        #password,
+        h3,
+        #fullname,
+        #comfirm_password,
+        #username2,
+        #password2 {
+            width: 200px;
+            /*宽度被设置为200像素*/
+            height: 20px;
+            /*高度为20像素*/
+            margin: 10px;
+            /*外边距为10像素*/
+            color: #df5334;
+            /*文本颜色为#df5334*/
+        }
+
+        /*忘記密碼token*/
+        h6 {
+            margin: 6px;
+            font-size: 14px;
+            color: #a3a2a3;
+        }
+
+        /*忘記密碼token*/
+        h6:hover {
+            color: black;
+        }
+
+        h5 {
+            margin: 20px;
+            color: #a3a2a3;
+        }
+
+        h5:hover {
+            color: black;
+        }
+
+        #container1,
+        #container2 {
+            margin: 50px;
+            /*設定元素的外邊界 margin 為 50 個像素*/
+            padding: 10px;
+            /*設定元素內容的內邊界 padding 為 10 個像素*/
+            width: 230px;
+            /*設定元素的寬度為 230 像素*/
+            height: 310px;
+            /*設定元素的高度為 300 像素*/
+            background-color: white;
+            /*設定元素的背景色為白色*/
+            border-radius: 5px;
+            /*設定元素的邊框圓角半徑為 5 像素*/
+            border-top: 10px solid #df5334;
+            /*設定元素上邊框的樣式為實心，顏色為 #df5334，寬度為 10 像素*/
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            /*設定元素的陰影樣式為水平和垂直都不偏移，模糊度為 70 像素，顏色為 rgba(0, 0, 0, 0.1) 即黑色透明度 0.1。*/
+            position: relative;
+            /*設定元素的位置為相對定位。*/
+            margin: auto;
+            /*設定元素的左右 margin 為自動，讓元素在水平方向上置中。*/
+            top: 100px;
+            /*設定元素距離其父元素上邊界的距離為 100 像素。*/
+            text-align: center;
+            /*設定元素內容的文字水平置中對齊*/
+        }
+
+        .system_name {
+            position: relative;
+            /*相對定位，表示該元素相對於其正常位置進行移動。*/
+            margin: auto;
+            /*自動居中，表示該元素的左右邊距會自動調整以實現水平居中對齊。*/
+            top: 100px;
+            /*設置該元素與頁面頂部的距離為 100 像素。*/
+            text-align: center;
+            /*設置該元素內容的水平對齊方式為居中。*/
+        }
+
+        .submit {
+            color: white;
+            /*文字顏色為白色*/
+            background: #df5334;
+            /*按鈕背景顏色為深橙色*/
+            width: 200px;
+            /*按鈕寬度為 200 像素。*/
+            height: 30px;
+            /*按鈕高度為 30 像素。*/
+            margin: 10px;
+            /*設置按鈕與其他元素之間的外邊距為 10 像素。*/
+            padding: 5px;
+            /*設置按鈕內容與邊框之間的內邊距為 5 像素。*/
+            border-radius: 5px;
+            /*設置按鈕的邊框圓角為 5 像素。*/
+            border: 0px;
+            /*設置按鈕邊框為 0 像素，即不顯示邊框。*/
+        }
+
+        .submit:hover {
+            background: #db6937;
+        }
+
+        #container2 {
+            visibility: hidden;
+            /*剛開始消失*/
+            height: 350px;
+        }
+
+        #copyright {
+            text-align: center;
+            /*文字水平居中對齊。*/
+            color: #a3a2a3;
+            /*文字顏色為淡灰色。*/
+            margin: -200px 0px 0px 0px;
+            /*元素的外邊距，其中 "-200px" 表示將元素向上移動 200 像素。*/
+            font-size: 14px;
+            /*文字大小為 14 像素。*/
+        }
+
+        input {
+            padding: 5px;
+            /*設置 input 元素內容與邊框之間的內邊距為 5 像素。*/
+            border: none;
+            /*設置 input 元素的邊框為無。*/
+            border: solid 1px #ccc;
+            /*設置 input 元素的邊框為實心，邊框寬度為 1 像素，顏色為淺灰色。*/
+            border-radius: 5px;
+            /*設置 input 元素的邊框圓角為 5 像素。*/
+        }
+
+        #password-toggle {
+            width: 30px;
+            height: 20px;
+            position: absolute;
+            top: 157px;
+            left: 197px;
+        }
+
+        .password-input {
+            display: inline-block;
+        }
+
+        .password-image {
+            display: inline-block;
+        }
+
+        label {
+            /* label[for="username"] { */
+            color: #a3a2a3;
+            font-size: 15px;
+            font-family: 微軟正黑體 Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="system_name">
+        <!-- <h2>用戶登入</h2> -->
+    </div>
+    <div class="login_page">
+        <div id="container1">
+            <div class="login">
+                <h3>登入 Log in</h3>
+                <form>
+                    <label for="username">帳號：</label>
+                    <input type="text" id="username" name="username" placeholder="帳號" required>
+                    <!-- <div class="tab"></div> -->
+                    <label for="password">密碼：</label>
+                    <input class="password-input" type="password" id="password" name="password" placeholder="密碼"
+                        required>
+                    <label for="db">Login Privilege</label>
+                    <input type="checkbox" id="db" name="db" value="db">
+                    <!-- <div class="tab"></div> -->
+                    <img id="password-toggle" src="http://127.0.0.1:3000/hidePasswd.png"
+                        alt="Toggle Password Visibility" class="password-image" onclick="togglePasswordVisibility()">
+                    <!-- <img id="password-toggle" src="./image/hidePasswd.png" alt="Toggle Password Visibility"
+                        class="password-image" onclick="togglePasswordVisibility()"> -->
+                    <input type="submit" value="登入" class="submit" id="submit">
+                </form>
+            </div><!-- login end-->
+        </div><!-- container1 end-->
+    </div><!-- login_page end-->
+
+    <script>
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("password");
+            var passwordToggle = document.getElementById("password-toggle");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                passwordToggle.src = "http://127.0.0.1:3000/showPasswd.png";
+                // passwordToggle.src = "./image/showPasswd.png";
+            } else {
+                passwordInput.type = "password";
+                passwordToggle.src = "http://127.0.0.1:3000/hidePasswd.png";
+                // passwordToggle.src = "./image/hidePasswd.png";
+            }
+        }
+        // 获取表单元素和提交按钮
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submit');
+        // 监听表单提交事件
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // 阻止表单的默认提交行为
+
+            // 获取用户名、密码和权限值
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const db = document.getElementById('db').checked ? 'db' : '';
+            // 构造请求体数据
+            const data = {
+                username: username,
+                password: password,
+                db: db
+            };
+            // 发送登录请求
+            fetch('/loginForm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        // 处理登录失败的情况，根据响应返回的错误信息进行相应的处理
+                        response.text().then(function (errorMessage) {
+                            alert(errorMessage);
+                            // Swal.fire({
+                            //     icon: 'error',
+                            //     title: 'Oops...',
+                            //     text: errorMessage,
+                            // });
+                        });
+                    } else {
+                        // 登录成功，重定向到AdminPage3.ejs页面或进行其他操作
+                        // 根据您的需求进行相应的处理
+                        // window.location.href = '/AdminPage3.ejs';
+                        if (response.redirected) {
+                            // 根据重定向的地址判断登录是否成功，执行相应的重定向操作
+                            if (response.url.includes('AdminPage3.ejs')) {
+                                window.location.href = response.url; // 重定向到AdminPage3.ejs页面
+                            } else if (response.url.includes('GPIOtool4.html')) {
+                                window.location.href = response.url; // 重定向到GPIOtool4.html页面
+                            } else if (response.url.includes('GPIOtool5.html')) {
+                                window.location.href = response.url; // 重定向到GPIOtool4.html页面
+                            }
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    // 处理请求发送失败的情况
+                    console.error('登录请求发送失败:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

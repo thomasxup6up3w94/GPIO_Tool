@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LibGPIO File Conversion Tool</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" type="image/ico" href="image/msi_icon.ico">
+    <link rel="icon" href="http://127.0.0.1:3000/msi_icon.ico" type="image/x-icon" />
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" -->
+    <!-- integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">	 -->
+    <style>
+        body {
+            /* font-family: sans-serif; */
+            font-family: 微軟正黑體 'PT Sans', Helvetica, Arial, sans-serif;
+            /*设置页面的默认字体为无衬线字体（sans-serif）*/
+        }
+
+        h1 {
+            text-align: center;
+            /*设置标题（h1）的文本居中，并在顶部留出1em的空间*/
+            margin-top: 0.5em;
+            color: #df5334;
+        }
+
+        form {
+            max-width: 1450px;
+            /*设置表单（form）的最大宽度为1500px*/
+            margin: 0 auto;
+            /*水平方向居中显示*/
+            padding: 1em;
+            /*设置内边距为1em*/
+            border: 1px solid #161515;
+            /*边框为1px实线*/
+            border-radius: 10px;
+            /*圆角为10px*/
+            border-top: 10px solid #df5334;
+            /*設定元素上邊框的樣式為實心，顏色為 #df5334，寬度為 10 像素*/
+            box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+            /*設定元素的陰影樣式為水平和垂直都不偏移，模糊度為 70 像素，顏色為 rgba(0, 0, 0, 0.1) 即黑色透明度 0.1。*/
+            /* text-align: center; */
+            /*設定元素內容的文字水平置中對齊*/
+        }
+
+        input[type="submit"] {
+            background-color: #df5334;
+            /*设置提交按钮（input[type="submit"]）的背景颜色为绿色（#4CAF50）*/
+            color: rgb(249, 246, 246);
+            /*文本颜色为浅灰色（rgb(249, 246, 246)）*/
+            padding: 0.5em 1em;
+            /*设置内边距为0.5em 1em*/
+            border-radius: 4px;
+            /*边框圆角为4px*/
+            border: none;
+            /*无边框*/
+            cursor: pointer;
+            /*设置光标样式为手型（cursor: pointer）*/
+            margin: 0.5em 0px 10px 0;
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            /*設置 input 元素內容與邊框之間的內邊距為 5 像素。*/
+            border: none;
+            /*設置 input 元素的邊框為無。*/
+            border: solid 1px #ccc;
+            /*設置 input 元素的邊框為實心，邊框寬度為 1 像素，顏色為淺灰色。*/
+            border-radius: 5px;
+            /*設置 input 元素的邊框圓角為 5 像素。*/
+        }
+
+        #textout {
+            width: 99%;
+            /* 设置宽度为视口宽度的80% */
+            /* max-width: 1490px; */
+            height: 90vh;
+            /* 设置高度为视口高度的50% */
+            /* resize: both; */
+            /*设置可以在水平和垂直方向上调整大小*/
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 99%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ffffff;
+            padding: 4px;
+        }
+
+        th {
+            color: #ffffff;
+        }
+
+        td {
+            background-color: #f3f3f3;
+            text-align: center;
+        }
+
+        /* tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        tr:last-of-type {
+            border-bottom: 2px solid #009879;
+        } */
+
+        tr:nth-of-type(even) td {
+            background-color: #ffffff;
+        }
+
+        select {
+            width: 100%;
+            /* 设置宽度为100% */
+            box-sizing: border-box;
+            /* 包括边框和内边距在内的宽度计算方式 */
+        }
+
+        /* 添加 CSS 样式以隐藏元素 */
+        #outputFileLabel,
+        #outputFile {
+            display: none;
+        }
+    </style>
+    <!-- <script src="GPIO.js/GPIOtool.js"></script> -->
+</head>
+
+<body>
+    <form onsubmit="processFiles(event)">
+        <h1>LibGPIO File Conversion Tool</h1>
+        <div>
+            <label for="fileInput">選擇並上傳CSV/H檔:</label>
+            <input type="file" id="fileInput" accept=".csv, .h" required>
+        </div>
+        </br>
+        <div>
+            <label for="outputFile" id="outputFileLabel">重新命名新檔案:</label>
+            <input type="text" id="outputFile" value="GpioPins">
+            <!-- <label for="outputFile">重新命名新檔案:</label>
+            <input type="text" id="outputFile" required> -->
+            <!-- <button type="submit" data-action="convertFile">Convert</button> -->
+            <!-- <input type="submit" value="Convert"> -->
+            <input type="submit" value="Download">
+            <!-- <button type="submit" id="downloadButton">Convert</button> -->
+        </div>
+        </br>
+        <div>
+            <button id="altertableadd" onclick="event.preventDefault()">新增欄位</button>
+            <button id="alterstabledropcolumn" onclick="event.preventDefault()">刪除欄位</button>
+        </div>
+        </br>
+        <!-- <div> -->
+        <!-- <label for="csvFile">CSV File:</label> -->
+        <!-- <input type="file" id="csvFile" accept=".csv" required> -->
+        <!-- <input type="file" id="csvFile" accept=".h" required> -->
+        <!-- </div> -->
+        <!-- </br> -->
+        <!-- <div> -->
+        <!-- <label for="tableFile">Table File:</label> -->
+        <!-- <input type="file" id="tableFile" accept=".txt" required> -->
+        <!-- <label for="hFile">Header File:</label> -->
+        <!-- <input type="file" id="hFile" accept=".h" required> -->
+        <!-- </div> -->
+        <!-- </br> -->
+        <!-- <div> -->
+        <!-- <label for="outputFile">Output File Name:</label> -->
+        <!-- <input type="text" id="outputFile" required> -->
+        <!-- <input type="submit" value="Convert"> -->
+        <!-- </div> -->
+        <!-- <div> -->
+        <!-- <textarea id="textout" name="mytext" style="resize:none;"></textarea> -->
+        <!-- <input type="file" id="csvFile" accept=".csv" class="btn btn-sm btn-outline-secondary"/> -->
+        <!-- <button type="button" class="btn btn-sm btn-outline-secondary" onclick="createTable()">Import</button> -->
+        <!-- </div> -->
+        <div id="tableContainer"></div>
+    </form>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script> -->
+    <script>
+        let selectedValue = '';
+        function processFiles(event) {
+            event.preventDefault();                                                     // 防止表單提交後重新載入頁面
+            // 定义全局变量保存选择的值
+            const fileInput = document.getElementById('fileInput');
+            // fileInput.addEventListener('change', () => {
+            fileInput.addEventListener('click', () => {
+                // event.preventDefault();
+                const tableContainer = document.getElementById('tableContainer');
+                tableContainer.innerHTML = '';
+            });
+            const fileName = fileInput.files[0].name;
+            if (fileName.endsWith('.h')) {
+                // 处理 .h 文件
+                console.log('Header File:', fileName);
+                // 处理第二个按钮的操作逻辑
+                const hFile = document.getElementById('fileInput').files[0];
+                const outputFile = document.getElementById('outputFile').value;
+                // 执行相关操作
+                console.log('Convert H:', hFile, outputFile);
+                const hfileReader = new FileReader();
+                hfileReader.onload = function (e) {
+                    const hfileContent = e.target.result;
+                    // 將 CSV 檔案內容傳送到後端處理
+                    // sendToBackend(csvContent, hfileContent, outputFile, csvFileName);
+                    sendToBackend00(hfileContent, outputFile);
+                }
+                hfileReader.readAsText(hFile);
+            } else if (fileName.endsWith('.csv')) {
+                // 处理 .csv 文件
+                console.log('CSV File:', fileName);
+                // 处理第一个按钮的操作逻辑
+                const csvFile = document.getElementById('fileInput').files[0];
+                const outputFile1 = document.getElementById('outputFile').value;
+                const csvFileName2 = csvFile.name;
+                const csvFileName = csvFileName2.replace(/\.[^/.]+$/, '');                       //\.: 匹配點字符（.）[^/.]+: 匹配除了點字符和斜線字符以外的一個或多個字符$: 表示匹配字符串的結尾  匹配從最後一個點字符開始到字符串結尾的所有字符（即檔案擴展名部分），並將其替換為空字串。
+                // 执行相关操作
+                console.log('Convert CSV:', csvFile, outputFile1);
+                // Read files using FileReader API            
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const csvContent = e.target.result;
+                    sendToBackend01(csvContent, outputFile1, csvFileName);
+                }
+                reader.readAsText(csvFile);
+            } else {
+                // 文件类型不受支持
+                console.log('Unsupported File Type');
+            }
+            // const csvFile = document.getElementById('csvFile').files[0];
+            // const outputFile = document.getElementById('outputFile').value + '.txt';
+            // const outputFile1 = document.getElementById('outputFile').value + '.csv';
+            // // const hFile = document.getElementById('hFile').files[0];
+            // const csvFileName2 = csvFile.name;
+            // // const csvFileName = csvFileName2.replace('.csv', '');
+            // // const csvFileName = csvFileName2.substring(0, csvFileName2.lastIndexOf('.'));
+            // const csvFileName = csvFileName2.replace(/\.[^/.]+$/, '');
+            // // Check if file inputs exist
+            // // if (!csvFile || !hFile) {
+            // //     alert('Please select both CSV and table files.');
+            // //     return;
+            // // }
+            // // Read files using FileReader API
+            // const reader = new FileReader();
+            // reader.onload = function (e) {
+            //     const csvContent = e.target.result;
+            //     // const hfileReader = new FileReader();
+            //     // hfileReader.onload = function (e) {
+            //     // const hfileContent = e.target.result;
+            //     // 將 CSV 檔案內容傳送到後端處理
+            //     sendToBackend01(csvContent, outputFile1, csvFileName);
+            //     // }
+            //     // hfileReader.readAsText(hFile);
+            // }
+            // reader.readAsText(csvFile);
+        }
+        function sendToBackend01(csvContent, outputFile1, csvFileName, callback) {
+            fetch('/csvdata', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ csvContent, outputFile1, csvFileName })
+            })
+                // .then(response => response.text())
+                .then(response => response.json())
+                .then(data => {
+                    // 在前端接收後端的回應並顯示在 textarea 中
+                    // document.getElementById('textout').textContent = data;
+                    // 解析数据为二维数组
+                    // const dataArray = JSON.parse(data.filecontent);
+                    // 在此处处理接收到的数据
+                    const dataArray = data.filecontent;
+                    const tableData = data.tableData;
+                    const table = createelement(dataArray, tableData);
+                    // 将表格添加到页面的指定容器中
+                    const tableContainer = document.getElementById('tableContainer');   // 將表格元素添加到指定的容器中，使用 tableContainer.appendChild(table)。
+                    tableContainer.appendChild(table);
+                    downloadTableAsCSV0(outputFile1, tableData);
+                    // 在此處理接收到的 data 值
+                    // console.log('接收到的資料:', data);
+                })
+                .catch(err => {
+                    console.error('發生錯誤:', err);
+                });
+        }
+        function sendToBackend00(hfileContent, outputFile, callback) {
+            fetch('/csvdata1', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hfileContent, outputFile })
+            })
+                // .then(response => response.text())
+                .then(response => response.json())
+                .then(data => {
+                    // 在前端接收後端的回應並顯示在 textarea 中
+                    // document.getElementById('textout').textContent = data;
+                    // 解析数据为二维数组
+                    // const dataArray = JSON.parse(data);
+                    // 在此处处理接收到的数据
+                    const dataArray = data.filecontent;
+                    const tableData = data.tableData;
+                    const table = createelement(dataArray, tableData);
+                    // 将表格添加到页面的指定容器中
+                    const tableContainer = document.getElementById('tableContainer');   // 將表格元素添加到指定的容器中，使用 tableContainer.appendChild(table)。
+                    tableContainer.appendChild(table);
+                    downloadTableAsCSV1(outputFile, tableData);
+                    // 在此處理接收到的 data 值
+                    // console.log('接收到的資料:', data);
+                })
+                .catch(err => {
+                    console.error('發生錯誤:', err);
+                });
+        }
+        function createelement(dataArray, tableData) {
+            // console.log(dataArray);
+            const options = createoptions(tableData);
+            // console.log(options);
+            // 创建表格元素
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+            table.id = 'table1';
+            // 遍历数据，生成表格行和单元格
+            for (let i = 0; i < dataArray.length; i++) {
+                const row = document.createElement('tr');                       // 使用迴圈遍歷 dataArray，生成表格的行和單元格。每個元素都會創建一個 <tr> 元素，並在其中創建 <td> 元素，填充內容為 dataArray 中對應位置的值。
+                // for (let j = 0; j < dataArray[i].length; j++) {
+                for (let j = 0; j < 9; j++) {
+                    const cell = document.createElement('td');
+                    if (i === 0 && j === 0) {
+                        const emptyCell = document.createElement('td'); // 创建空单元格
+                        row.appendChild(emptyCell);
+                    }
+                    if (i !== 0 && j === 0) {
+                        const checkboxCell = document.createElement('td');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        // 添加复选框的事件监听器
+                        // checkbox.addEventListener('change', () => {
+                        // 复选框状态变化的处理代码
+                        const deleteButton = document.getElementById('alterstabledropcolumn');
+                        deleteButton.addEventListener('click', () => {
+                            event.preventDefault();
+                            const table = document.getElementById('table1');
+                            const checkboxes = table.querySelectorAll('tbody input[type="checkbox"]:checked');
+                            checkboxes.forEach((checkbox) => {
+                                const row = checkbox.closest('tr');
+                                if (row) {
+                                    row.remove();
+                                }
+                            });
+                        });
+                        // });
+                        checkboxCell.appendChild(checkbox);
+                        row.appendChild(checkboxCell);
+                    }
+                    if (i !== 0 && j !== 0) {
+                        const select = document.createElement('select');
+                        for (let k = 0; k < options[j].length; k++) {
+                            // 在内层循环结束后添加一行空字符串选项
+                            if (k === 0) {
+                                const emptyOption = document.createElement('option');
+                                emptyOption.value = '';
+                                emptyOption.textContent = '';
+                                select.appendChild(emptyOption);
+                            }
+                            const option = document.createElement('option');
+                            option.value = options[j][k];
+                            option.textContent = options[j][k];
+                            select.appendChild(option);
+                        }
+                        select.value = dataArray[i][j]; // 设置默认选中的选项
+                        // select 的 change 事件监听器
+                        // select.addEventListener('change', (event) => {
+                        //     selectedValue = event.target.value;
+                        // });
+                        select.addEventListener('change', () => {
+                            event.preventDefault();
+                            // 更新数据数组中对应的值
+                            dataArray[i][j] = select.value;
+                        });
+                        cell.appendChild(select);
+                    }
+                    if (i == 0) {
+                        const text = dataArray[i][j];
+                        cell.textContent = text;
+                    }
+                    if (i !== 0 && j == 0) {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = dataArray[i][j]; // 设置默认输入框的值
+                        input.addEventListener('input', (event) => {
+                            event.preventDefault();
+                            // 获取输入框的值
+                            const inputValue = event.target.value;
+                            // 更新数据数组中对应的值
+                            dataArray[i][j] = inputValue;
+                        });
+                        cell.appendChild(input);
+                        // const text = dataArray[i][j];
+                        // cell.textContent = text;
+                    }
+                    row.appendChild(cell);
+                }
+                tbody.appendChild(row);                                         // 將每個創建的行和單元格元素添加到表格的 <tbody> 元素中，使用 
+                const addButton = document.getElementById('altertableadd');
+                addButton.addEventListener('click', () => {
+                    event.preventDefault();
+                    if (i == 1) {
+                        const newRow = document.createElement('tr');
+                        for (let y = 0; y < 10; y++) {
+                            // 第一列是复选框单元格
+                            const newCell = document.createElement('td');
+                            if (y > 1) {
+                                const select = document.createElement('select');
+                                for (let k = 0; k < options[y - 1].length; k++) {
+                                    // 在内层循环结束后添加一行空字符串选项
+                                    if (k === 0) {
+                                        const emptyOption = document.createElement('option');
+                                        emptyOption.value = '';
+                                        emptyOption.textContent = '';
+                                        select.appendChild(emptyOption);
+                                    }
+                                    const option = document.createElement('option');
+                                    option.value = options[y - 1][k];
+                                    option.textContent = options[y - 1][k];
+                                    select.appendChild(option);
+                                }
+                                select.value = '';
+                                newCell.appendChild(select);
+                                newRow.appendChild(newCell);
+                            }
+                            if (y == 0) {
+                                const checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                newCell.appendChild(checkbox);
+                                newRow.appendChild(newCell);
+                            }
+                            if (y == 1) {
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.value = ''; // 设置默认输入框的值
+                                // input.id = 'myInput'; // 设置唯一的ID属性
+                                // const myInput = document.getElementById('myInput'); // 根据唯一的ID属性获取文本框元素
+                                input.addEventListener('input', (event) => {
+                                    event.preventDefault();
+                                    const inputValue = event.target.value; // 获取输入框的值
+                                    // 在这里可以根据需要对输入的值进行处理或执行其他操作
+                                    input.value = inputValue;
+                                    // console.log(`input.value: ${input.value}`);
+                                });
+                                newCell.appendChild(input);
+                                newRow.appendChild(newCell);
+                            }
+
+                        }
+                        const table = document.getElementById('table1');
+                        const checkboxes = table.querySelectorAll('tbody input[type="checkbox"]:checked');
+                        let hasSelectedCheckbox = false;
+                        for (let i = 0; i < checkboxes.length; i++) {
+                            const checkbox = checkboxes[i];
+                            const row = checkbox.closest('tr');
+                            if (row) {
+                                const referenceRow = row.nextElementSibling; // 获取与选中复选框最接近的行的下一行作为参考节点
+                                tbody.insertBefore(newRow, referenceRow);
+                                hasSelectedCheckbox = true;
+                            }
+                        }
+                        if (!hasSelectedCheckbox) {
+                            // 找到要插入的位置的参考节点
+                            const referenceRow = tbody.children[1]; // 假设要在第二行之前插入新行
+                            // 将新行插入到指定位置之前
+                            tbody.insertBefore(newRow, referenceRow);
+                        }
+                    }
+                });
+            }
+            // 将表格行和单元格添加到表格中
+            table.appendChild(tbody);                                           // 將 <tbody> 元素添加到表格元素中，使用 table.appendChild(tbody)。
+            return table;
+        }
+        function createoptions(tableData) {
+            const sectionsOrder = [
+                'GPIO Pin',
+                'Pad Mode',
+                'Host Soft Owner',
+                'Direction',
+                'Output State',
+                'Interrupt Configuration',
+                'Reset Configuration',
+                'Electrical Configuration',
+                'Lock Status'
+            ];
+            const lines = tableData.split('\n');
+            const options = [];
+            // const options = {};
+            let currentSection = '';
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith('[') && line.endsWith(']')) {
+                    currentSection = line.substring(1, line.length - 1);
+                } else if (line.includes('=')) {
+                    const parts = line.split('=');
+                    const key = parts[0].trim();
+                    const value = parts[1].trim();
+                    if (sectionsOrder.includes(currentSection)) {
+                        // options.push(value);
+                        // if (!options[currentSection]) {
+                        //     options[currentSection] = [];
+                        // }
+                        // options[currentSection].push(value);
+                        const sectionIndex = sectionsOrder.indexOf(currentSection);
+                        if (!options[sectionIndex]) {
+                            options[sectionIndex] = [];
+                        }
+                        options[sectionIndex].push(value);
+                    }
+                }
+            }
+            return options;
+        }
+        function TableAsCSV(outputFile, tableData) {
+            // 获取表格元素
+            const table = document.getElementById('table1');
+            // 创建 CSV 内容
+            let csvContent = '';
+            // 遍历表格行
+            const rows = table.querySelectorAll('tr');
+            rows.forEach((row) => {
+                // 遍历行中的单元格
+                const cells = row.querySelectorAll('td');
+                cells.forEach((cell, index) => {
+                    // 不处理第一列的单元格（即复选框所在的单元格）
+                    if (index === 0) return;
+                    // 获取单元格内容并添加到 CSV 中
+                    // const cellContent = cell.textContent.trim();
+                    // csvContent += `"${cellContent}"`;
+                    // 检查单元格是否包含下拉选项
+                    const select = cell.querySelector('select');
+                    const input = cell.querySelector('input');
+                    if (select) {
+                        // 获取当前选中的选项
+                        const selectedOption = select.value;
+                        csvContent += `${selectedOption}`;
+                    } else {
+                        // 获取单元格内容并添加到 CSV 中
+                        const cellContent = cell.textContent.trim();
+                        csvContent += `${cellContent}`;
+                    }
+                    if (input) {
+                        const inputValue = input.value;
+                        csvContent += `${inputValue}`;
+                    }
+                    // 添加逗号分隔符，除非是行的最后一个单元格
+                    // if (index < cells.length - 1) {
+                    if (index < cells.length) {
+                        csvContent += ',';
+                    }
+                });
+                // 添加换行符
+                csvContent += '\n';
+            });
+            return csvContent;
+        }
+        function downloadTableAsCSV0(outputFile, tableData) {
+            let csvContent = TableAsCSV(outputFile, tableData);
+            // function saveFile(content, filename) {
+            //     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            //     saveAs(blob, filename);
+            // }
+            // saveFile(csvContent, outputFile);
+            downloadTableAsCSV00(csvContent, outputFile, tableData);
+        }
+        function downloadTableAsCSV00(csvContent, outputFile, tableData) {
+            // 创建并下载 CSV 文件
+            const downloadLink = document.createElement('a');                   // 首先，創建一個 <a> 元素，用於設定下載的連結。
+            const blob = new Blob([csvContent], { type: 'text/csv' });          // 使用 new Blob([csvContent], { type: 'text/csv' }) 創建一個 Blob 物件，其中 csvContent 是包含 CSV 內容的字串，並設定類型為 text/csv。
+            const url = URL.createObjectURL(blob);                              // 使用 URL.createObjectURL(blob) 創建一個 URL，該 URL 表示 Blob 物件的位址。
+            downloadLink.href = url;                                            // 將創建的 URL 設置為 <a> 元素的 href 屬性，這樣點擊該連結時將下載該 URL 所指向的資源。
+            downloadLink.download = outputFile;                                // 設置 <a> 元素的 download 屬性為 outputFile1，指定下載時的檔案名稱。
+            downloadLink.click();                                               // 使用 downloadLink.click() 觸發點擊事件，自動下載該連結。
+            // 清理资源
+            URL.revokeObjectURL(url);                                           // 使用 URL.revokeObjectURL(url) 釋放掉創建的 URL 物件，以清理資源。
+            // 重置选项更改标记
+            var content = getcsvContentifo(csvContent, tableData);
+            downloadTableAsCSV01(content, outputFile);
+        }
+        function downloadTableAsCSV01(content, outputFile) {
+            // 创建并下载 TXT 文件
+            const downloadLink1 = document.createElement('a');
+            const blob1 = new Blob([content], { type: 'text/plain' });
+            const url1 = URL.createObjectURL(blob1);
+            downloadLink1.href = url1;
+            downloadLink1.download = outputFile + '.txt'; // 将文件扩展名更改为 .txt 或自定义扩展名
+            downloadLink1.click();
+            // 清理资源
+            URL.revokeObjectURL(url1);
+        }
+        function downloadTableAsCSV1(outputFile, tableData) {
+            let csvContent = TableAsCSV(outputFile, tableData);
+            var array3 = htogetcsvifo01(csvContent, tableData);
+            downloadArrayAsCSV000(array3, csvContent, outputFile);
+        }
+        function downloadArrayAsCSV000(array3, csvContent, outputFile) {
+            // 创建并下载 CSV 文件
+            const downloadLink = document.createElement('a');                   // 首先，創建一個 <a> 元素，用於設定下載的連結。
+            const blob = new Blob([csvContent], { type: 'text/csv' });          // 使用 new Blob([csvContent], { type: 'text/csv' }) 創建一個 Blob 物件，其中 csvContent 是包含 CSV 內容的字串，並設定類型為 text/csv。
+            const url = URL.createObjectURL(blob);                              // 使用 URL.createObjectURL(blob) 創建一個 URL，該 URL 表示 Blob 物件的位址。
+            downloadLink.href = url;                                            // 將創建的 URL 設置為 <a> 元素的 href 屬性，這樣點擊該連結時將下載該 URL 所指向的資源。
+            downloadLink.download = outputFile;                                // 設置 <a> 元素的 download 屬性為 outputFile1，指定下載時的檔案名稱。
+            downloadLink.click();                                               // 使用 downloadLink.click() 觸發點擊事件，自動下載該連結。
+            // 清理资源
+            URL.revokeObjectURL(url);                                           // 使用 URL.revokeObjectURL(url) 釋放掉創建的 URL 物件，以清理資源。
+            downloadArrayAsCSV001(array3, outputFile);
+        }
+        function downloadArrayAsCSV001(array, filename) {
+            const csvContent = array.map(row => row.join(',')).join('\n');
+            const csvData = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', csvData);
+            linkElement.setAttribute('download', filename);
+            linkElement.style.display = 'none';
+            document.body.appendChild(linkElement);
+            linkElement.click();
+            document.body.removeChild(linkElement);
+        }
+        function htogetcsvifo01(csvContent, tableData) {
+            const desiredKeys = [
+                '[GPIO Pin]',
+                '[Pad Mode]',
+                '[Host Soft Owner]',
+                '[Direction]',
+                '[Output State]',
+                '[Interrupt Configuration]',
+                '[Reset Configuration]',
+                '[Electrical Configuration]',
+                '[Lock Status]',
+                '[None]'
+            ];
+            const lines = csvContent.trim().split('\n');
+            const array = [];
+            const array1 = [];
+            for (let i = 0; i < lines.length; i++) {
+                // console.log(lines[i]);
+                // array.push(lines[i].trim().split(','));                               //將 lines[i] 字符串先使用 .trim() 方法去除前後空格，然後使用 .split(',') 方法將其按逗號進行分割，將分割後的結果作為一個新的元素添加到 array 陣列中。
+                array.push(lines[i].split(',').map(item => item.trim()));                //是将一行字符串按逗号分割，并去除每个项的首尾空格，然后将结果作为一个数组加入到 array 中
+                array1.push(lines[i].split(',').map(item => item.trim()));               //是将一行字符串按逗号分割，并去除每个项的首尾空格，然后将结果作为一个数组加入到 array1 中
+            }
+            var l = 1;
+            var textContent = "";
+            for (var j = 1; j < lines.length; j++) {
+                var columnCount1 = 0;
+                // console.log(lines[j].split(',').length);
+                if (array[j][8] && /[a-zA-Z]{4,}/.test(array[j][8])) {
+                    columnCount1 = 9;
+                } else {
+                    columnCount1 = 8;
+                }
+                for (var k = 0; k < columnCount1; k++) {
+                    // console.log(columnCount1);
+                    // array[j][k] = array[j][k].replace(/"/g, '');    //将字符串中的所有双引号替换为空字符串，即去除双引号。
+                    // console.log(array[j][k]);
+                    var m = k;
+                    var resetConfigStart = tableData.indexOf(desiredKeys[m]);
+                    var resetConfigEnd = tableData.indexOf(desiredKeys[m + 1]);
+                    var resetConfigString = tableData.substring(resetConfigStart, resetConfigEnd).trim();
+                    // var resetConfigString = tableData.substring(resetConfigStart).trim();
+                    const keyValuePairs = [];
+                    // const keyValuePairs = {};                                 //建立一個以 key 為索引的物件
+                    const regex = /^\s*([^=\[\]]+)\s*=\s*([^=\[\]]+)\s*$/gm;     //^ 表示匹配行的开头。// \s* 匹配零个或多个空白字符。这个正则表达式可以用于匹配以空白字符开头的字符串，它会忽略开头的空白字符并匹配之后的内容。// ([^=\[\]]+) 是一个捕获组，用于匹配除了等号（=）、左方括号（[）、右方括号（]）之外的任意字符。[^=\[\]] 是一个字符类，表示不是等号、左方括号和右方括号的字符。// \s*=\s* 匹配等号两侧的零个或多个空白字符。// ([^=\[\]]+) 是另一个捕获组，用于匹配除了等号、左方括号、右方括号之外的任意字符。// \s* 匹配零个或多个空白字符。// $ 表示匹配行的结尾。// g 是全局匹配标志，表示匹配多个符合条件的字符串。// m 是多行匹配标志，表示匹配多行文本中的行开头和行结尾。
+                    let match;
+                    while ((match = regex.exec(resetConfigString))) {
+                        const key = match[1].trim();
+                        const value = match[2].trim();
+                        // keyValuePairs[key] = value;                           //建立一個以 key 為索引的物件
+                        keyValuePairs.push([key, value]);
+                    }
+                    // const entries = Object.entries(keyValuePairs);            // 提取每个键和对应的值
+                    // entries.forEach(([key, value]) => {                       // 打印每个键和对应的值
+                    //     console.log(`键: ${key}, 值: ${value}`);
+                    // });
+                    // const keys = entries.map(([key, value]) => key);          // 提取所有的键
+                    // const values = entries.map(([key, value]) => value);      // 提取所有的值
+                    // for (var i = 0; i <= keys.length; i++) {
+                    //     console.log('所有的键:', keys[i]);
+                    //     console.log('所有的值:', values[i]);
+                    // }
+                    // ////---------------------------------------
+                    // keyValuePairs.forEach(([key, value]) => {
+                    //     console.log(`键: ${key}, 值: ${value}`);
+                    // });        
+                    const keys = keyValuePairs.map(([key, value]) => key);
+                    const values = keyValuePairs.map(([key, value]) => value);
+                    for (var n = 0; n < values.length; n++) {
+                        // console.log(values.length);
+                        if (values[n] == array[j][k]) {
+                            array1[j][k] = keys[n];
+                            break;
+                        }
+                        if ((values[n] !== array[j][k]) && (n == values.length - 1)) {
+                            array1[j][k] = 'error!';
+                        }
+                    }
+                }
+            }
+            return array1;
+        }
+        function getcsvContentifo(csvContent) {
+            const lines = csvContent.trim().split('\n');
+            // 遍历每一行，并在末尾添加逗号
+            // for (var i = 0; i < lines.length; i++) {
+            //     if (lines[i].charAt(lines[i].length - 1) !== ',') {
+            //         lines[i] += ',';
+            //     }
+            // }
+            // 遍历每一行，并移除末尾逗号
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i].charAt(lines[i].length - 1) === ',') {
+                    lines[i] = lines[i].slice(0, -1); // 使用字符串的 slice() 方法截取除了最后一个字符之外的部分
+                }
+            }
+            const array = [];
+            for (let i = 0; i < lines.length; i++) {
+                // array.push(lines[i].trim().split(','));
+                const csvstring = lines[i].trim().split(',');
+                // console.log(lines[i]);
+            }
+            var l = 1;
+            var textContent = "";
+            for (var j = 1; j < lines.length; j++) {
+                csvstring = lines[j].trim().split(',');
+                for (var k = 0; k < csvstring.length; k++) {
+                    // console.log(csvstring[k]);
+                    if (k == 8) {
+                        var formalCode = csvstring[k];
+                        textContent = textContent.replace(/}},\n$/, "");
+                        textContent += formalCode;
+                        textContent += "}},"
+                        textContent = textContent + "\n";
+                    } else {
+                        var formalCode = csvstring[k];
+                        if (l % 8 == 1) {
+                            textContent += "{ "
+                        }
+                        textContent += formalCode;
+                        if (l % 8 != 0) {
+                            textContent += ", "
+                        } else {
+                            textContent += " "
+                        }
+                        if (l % 8 == 1) {
+                            textContent += "{ "
+                        }
+                        if (l % 8 == 0) {
+                            textContent += "}},"
+                            textContent = textContent + "\n";
+                        }
+                        l = l + 1;
+                    }
+                }
+            }
+            return textContent;
+        }        
+    </script>
+</body>
+
+</html>
