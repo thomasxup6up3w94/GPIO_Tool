@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python 模組",
+            "type": "python",
+            "request": "launch",
+            "module": "enter-your-module-name",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: 目前的檔案",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: GPIOAdminLogin.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/.venv",
+            "console": "integratedTerminal",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "GPIOAdminLogin.py",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
+            "jinja": true,
+            "justMyCode": true
+        }
+    ]
+}
